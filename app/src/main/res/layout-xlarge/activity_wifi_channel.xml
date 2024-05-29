@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.skyTestLauncher.ui.Wifi_Channel_manager">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="20dp"
+        app:cardBackgroundColor="@color/background_color">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.example.skyTestLauncher.views.BarChartView
+                android:id="@+id/barChartView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp" />
+
+            <TextView
+                android:id="@+id/y_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="210dp"
+                android:layout_toLeftOf="@+id/barChartView"
+                android:rotation="270"
+                android:text="同频数量" />
+
+            <TextView
+                android:id="@+id/x_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/barChartView"
+                android:layout_marginLeft="450dp"
+                android:text="wifi信道" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2.4GWifi信道评级："
+                android:layout_below="@+id/barChartView"
+                android:layout_marginTop="35dp"
+                android:layout_marginLeft="150dp"
+                android:textColor="@color/light_blue_500"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="最佳信道："
+                android:layout_below="@+id/barChartView"
+                android:layout_marginTop="35dp"
+                android:layout_marginLeft="650dp"
+                android:textColor="@color/light_blue_500"
+                android:textSize="20sp"/> />
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

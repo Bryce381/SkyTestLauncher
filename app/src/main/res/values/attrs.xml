@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundIndicatorView">
+        <!--最大数值-->
+        <attr name="maxNum" format="integer"/>
+        <!--圆盘起始角度-->
+        <attr name="startAngle" format="integer"/>
+        <!--圆盘扫过的角度-->
+        <attr name="sweepAngle" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="CircularProgressView">
+        <attr name="backWidth" format="dimension" />    <!--背景圆环宽度-->
+        <attr name="progWidth" format="dimension" />    <!--进度圆环宽度-->
+        <attr name="backColor" format="color" />        <!--背景圆环颜色-->
+        <attr name="progColor" format="color" />        <!--进度圆环颜色-->
+        <attr name="progStartColor" format="color" />   <!--进度圆环开始颜色-->
+        <attr name="progFirstColor" format="color" />   <!--进度圆环结束颜色-->
+        <attr name="progress" format="integer" />       <!--圆环进度-->
+    </declare-styleable>
+
+    <declare-styleable name="WaveView">
+    <attr name="bottomTextHeight" format="dimension" />    <!--X轴到底部的间距高度-->
+    <attr name="leftTextWidth" format="dimension" />    <!--Y轴到左边的间距宽度-->
+    <attr name="leftTextMargin" format="dimension" />    <!--Y轴到左边文字的间距-->
+    <attr name="coordinateTextSize" format="dimension" />    <!--坐标轴字体大小-->
+    <attr name="coordinateTextColor" format="color" />    <!--坐标轴字体颜色-->
+        <attr name="waveLineColor" format="color" />    <!--坐标轴字体颜色-->
+    <attr name="coordinateColor" format="color" />    <!--坐标轴颜色-->
+
+    <attr name="showTextSize" format="dimension" />    <!--点击显示弹窗的字体大小-->
+    <attr name="showBackgroundColor" format="color" />    <!--点击显示弹窗的背景-->
+    <attr name="showPaddingVertical" format="dimension" />
+    <attr name="showPaddingHorizontal" format="dimension" />
+    </declare-styleable>
+
+    <!-- 其他属性... -->
+    <declare-styleable name="LineChartView">
+        <attr name="curveColor" format="color"/>
+    </declare-styleable>
+
+</resources>
