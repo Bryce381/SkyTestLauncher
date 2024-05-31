@@ -1,6 +1,7 @@
 package com.example.skyTestLauncher.views;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -79,6 +80,14 @@ public class LineChartView extends View {
     private int mMaxTextHeight;
     private int mMaxTextWidth;
 
+    public Resources getResources() {
+        return getContext().getResources();
+    }
+
+    private float pxToDp(float px) {
+        return px / getResources().getDisplayMetrics().density;
+    }
+
     public LineChartView(Context context) {
         this(context, null);
     }
@@ -135,6 +144,13 @@ public class LineChartView extends View {
 
 
     private void initView() {
+
+        yAxisSpace = (int) pxToDp(yAxisSpace);;
+        xAxisSpace = (int) pxToDp(xAxisSpace);;
+        mKeduWidth = (int) pxToDp(mKeduWidth);;
+        keduTextSize = (int) pxToDp(keduTextSize);;
+        textPadinng = (int) pxToDp(textPadinng);;
+
         //初始化画笔
         mPaint = new Paint();
         mPaint.setColor(ContextCompat.getColor(mContext, R.color.light_blue_700));

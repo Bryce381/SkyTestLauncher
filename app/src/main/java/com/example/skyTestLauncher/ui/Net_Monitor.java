@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.SkyTestLauncher.R;
+import com.example.skyTestLauncher.logic.NetworkRepository;
 import com.example.skyTestLauncher.model.DataViewModel;
 import com.example.skyTestLauncher.views.LineChartView;
 import com.example.skyTestLauncher.views.NetUsageView;
@@ -125,8 +126,12 @@ public class Net_Monitor extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        liveDataUp.removeObservers(Net_Monitor.this);
-        liveDataDown.removeObservers(Net_Monitor.this);
+        if (liveDataUp != null) {
+            liveDataUp.removeObservers(Net_Monitor.this);
+        }
+        if(liveDataDown != null) {
+            liveDataDown.removeObservers(Net_Monitor.this);
+        }
         liveDataUp = null;
         liveDataDown = null;
     }

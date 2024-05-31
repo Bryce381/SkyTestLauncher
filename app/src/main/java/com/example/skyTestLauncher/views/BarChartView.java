@@ -1,6 +1,7 @@
 package com.example.skyTestLauncher.views;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -28,11 +29,11 @@ public class BarChartView extends View {
     private Paint mPaintText;
     //柱状条对应的颜色数组
     private int colors;
-    private int keduTextSpace = 40;//刻度与文字之间的间距
-    private int keduWidth = 20; //坐标轴上横向标识线宽度
-    private int keduSpace = 250; //每个刻度之间的间距 px
-    private int itemSpace = 100;//柱状条之间的间距
-    private int itemWidth = 100;//柱状条的宽度
+    private int keduTextSpace = 80;//刻度与文字之间的间距
+    private int keduWidth = 40; //坐标轴上横向标识线宽度
+    private int keduSpace = 500; //每个刻度之间的间距 px
+    private int itemSpace = 200;//柱状条之间的间距
+    private int itemWidth = 200;//柱状条的宽度
     //刻度递增的值
     private int valueSpace = 4;
     //绘制柱形图的坐标起点
@@ -49,6 +50,17 @@ public class BarChartView extends View {
     private List<Integer> mData = new ArrayList<>();
     private List<Integer> yAxisList = new ArrayList<>();
     private List<String> xAxisList = new ArrayList<>();
+
+
+    // ... 其他代码 ...
+
+    public Resources getResources() {
+        return getContext().getResources();
+    }
+
+    private float pxToDp(float px) {
+        return px / getResources().getDisplayMetrics().density;
+    }
 
     public BarChartView(Context context) {
         this(context, null);
@@ -70,6 +82,13 @@ public class BarChartView extends View {
         if (!isUpdate) {
             initData();
         }
+
+        keduTextSpace = (int) pxToDp(keduTextSpace);
+        keduWidth = (int) pxToDp(keduWidth);
+        keduSpace = (int) pxToDp(keduSpace);
+        itemSpace = (int) pxToDp(itemSpace);
+        itemWidth = (int) pxToDp(itemWidth);
+
         //设置边缘特殊效果
         BlurMaskFilter PaintBGBlur = new BlurMaskFilter(
                 1, BlurMaskFilter.Blur.INNER);
