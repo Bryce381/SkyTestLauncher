@@ -1,7 +1,6 @@
 package com.example.skyTestLauncher.views;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -63,14 +62,13 @@ public class LineChartView extends View {
     //Y轴的绘制距离
     private int mYAxisMaxValue;
     //Y轴刻度间距(px)
-    private int yAxisSpace = 80;
+    private int yAxisSpace = 40;
     //X轴刻度间距(px)
-    private int xAxisSpace = 80;
-    //Y轴刻度线宽度
-    private int mKeduWidth = 20;
-    private float keduTextSize = 20;
+    private int xAxisSpace = 40;
+    private int mKeduWidth = 10;
+    private float keduTextSize = 10;
     //刻度值距离坐标的padding距离
-    private int textPadinng = 10;
+    private int textPadinng = 5;
     //Y轴递增的实际值
     private int yIncreaseValue;
     //true：绘制曲线 false：折线
@@ -79,14 +77,6 @@ public class LineChartView extends View {
     private Rect mXMaxTextRect;
     private int mMaxTextHeight;
     private int mMaxTextWidth;
-
-    public Resources getResources() {
-        return getContext().getResources();
-    }
-
-    private float pxToDp(float px) {
-        return px / getResources().getDisplayMetrics().density;
-    }
 
     public LineChartView(Context context) {
         this(context, null);
@@ -144,13 +134,6 @@ public class LineChartView extends View {
 
 
     private void initView() {
-
-        yAxisSpace = (int) pxToDp(yAxisSpace);;
-        xAxisSpace = (int) pxToDp(xAxisSpace);;
-        mKeduWidth = (int) pxToDp(mKeduWidth);;
-        keduTextSize = (int) pxToDp(keduTextSize);;
-        textPadinng = (int) pxToDp(textPadinng);;
-
         //初始化画笔
         mPaint = new Paint();
         mPaint.setColor(ContextCompat.getColor(mContext, R.color.light_blue_700));

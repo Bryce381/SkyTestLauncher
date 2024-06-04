@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,8 +15,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.SkyTestLauncher.R;
-import com.example.skyTestLauncher.ui.Net_Monitor;
 import com.example.skyTestLauncher.ui.File_Manager;
+import com.example.skyTestLauncher.ui.Net_Monitor;
 import com.example.skyTestLauncher.ui.NetworkMonitorService;
 import com.example.skyTestLauncher.ui.NetworkchangeReceiver;
 import com.google.android.material.navigation.NavigationView;
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
+                // 使导航视图获取焦点
+                navView.requestFocus();
             }
         });
 
@@ -81,6 +84,23 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
+        // 向当前组件的 onBackPressedDispatcher 添加一个回调。
+        // 这允许在按下返回键时执行自定义逻辑。
+        // `this` 表示当前的 Fragment 或 Activity。
+        // `callback` 是一个实现了 OnBackPressedCallback 接口的对象，
+        // 它定义了当按下返回键时执行的逻辑。
+        getOnBackPressedDispatcher().addCallback(this, callback);
 
     }
+
+    private OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                // 添加其他处理逻辑，比如显示对话框或执行其他操作
+            }
+        }
+    };
 }

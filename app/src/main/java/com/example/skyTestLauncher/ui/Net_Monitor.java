@@ -13,7 +13,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.SkyTestLauncher.R;
-import com.example.skyTestLauncher.logic.NetworkRepository;
 import com.example.skyTestLauncher.model.DataViewModel;
 import com.example.skyTestLauncher.views.LineChartView;
 import com.example.skyTestLauncher.views.NetUsageView;
