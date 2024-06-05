@@ -15,7 +15,7 @@
         android:gravity="center">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:navigationIcon="@drawable/icon_menu" />

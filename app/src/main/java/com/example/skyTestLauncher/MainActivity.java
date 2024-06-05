@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawer_layout);
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar_main);
         navView = findViewById(R.id.nav_view);
 
 

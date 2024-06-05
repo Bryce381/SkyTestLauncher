@@ -14,26 +14,34 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--增加wifi权限-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 增加wifi权限 -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+
     <application
+        android:name="com.example.skyTestLauncher.SkyTestLauncherApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label=" "
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DrawerDemo"
-        tools:targetApi="31"
-        android:name="com.example.skyTestLauncher.SkyTestLauncherApplication">
-
+        tools:targetApi="31">
+        <activity
+            android:name="com.example.skyTestLauncher.ui.ExternalFile_Manage"
+            android:exported="true" />
+        <activity
+            android:name="com.example.skyTestLauncher.ui.LocalFile_Manage"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name="com.example.skyTestLauncher.ui.Wifi_Channel_manager"
             android:exported="true" />
@@ -42,7 +50,8 @@
             android:exported="true" />
         <activity
             android:name="com.example.skyTestLauncher.ui.File_Manager"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name="com.example.skyTestLauncher.MainActivity"
             android:exported="true">
@@ -53,9 +62,22 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.skyTestLauncher.ui.NetworkMonitorService"
-            android:exported="false"
-            android:enabled="true"/>
+        <receiver android:name="com.example.skyTestLauncher.ui.UsbBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+                <action android:name="android.intent.action.MEDIA_REMOVED" />
+            </intent-filter>
+        </receiver>
+
+
+        <service
+            android:name="com.example.skyTestLauncher.ui.NetworkMonitorService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

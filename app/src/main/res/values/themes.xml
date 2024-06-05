@@ -18,4 +18,11 @@
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
+
+    <style name="MyEditTextStyle">
+        <!--文本的颜色，textColor和textSize不要放到style中-->
+        <item name="android:textColorHint">@color/gray_200</item>
+        <item name="colorControlNormal">@color/gray_200</item>
+        <item name="colorControlActivated">@color/light_blue_200</item>
+    </style>
 </resources>
