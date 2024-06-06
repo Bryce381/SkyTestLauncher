@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.example.skyTestLauncher.model.ExternalFileModel;
 import com.example.utils.LogUtil;
 
 import java.util.List;
@@ -80,6 +81,12 @@ public UsbBroadcastReceiver(UsbListener listener) {
                     if (listener != null) {
                         listener.onUsbMountStateChanged(true);
                     }
+                    if (intent.getData() != null) {
+                        String path = intent.getData().getPath();
+                        ExternalFileModel.getInstance().setExternalFilePath(path);
+                        LogUtil.d("test1", "path"+path);
+                    }
+
                     break;
                 case Intent.ACTION_MEDIA_UNMOUNTED:
                 case Intent.ACTION_MEDIA_REMOVED:

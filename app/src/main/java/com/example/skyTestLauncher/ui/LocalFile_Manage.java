@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.SkyTestLauncher.R;
+import com.example.utils.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,10 +40,11 @@ public class LocalFile_Manage extends AppCompatActivity {
     ListView fileLv;     // 文件列表
     File currentParent;  // 当前的父目录
     File[] currentFiles; // 当前文件
-    File root;           // SD卡的根目录
+    File root;           // 内部存储的根目录
     ImageView ivClean;   // 清空输入内容
     ImageView ivSearch;  // 搜索关键词
     EditText etSearch;   // 输入内容
+    FileManagerAdapter localAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class LocalFile_Manage extends AppCompatActivity {
         etSearch = findViewById(R.id.et_search);
         int myPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         if (myPermission != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "请求读取SD卡权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请求内部存储权限", Toast.LENGTH_SHORT).show();
             // 动态申请权限，请求码为1
             ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
@@ -67,10 +69,10 @@ public class LocalFile_Manage extends AppCompatActivity {
     }
 
     private void initFile() {
-        // 判断手机中是否装载了sd卡
-        boolean isLoadSDCard = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-        if (isLoadSDCard) {
-            // 获取SD卡的根目录
+        //查看内部存储的挂载状态
+        boolean getMountStatus = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+        if (getMountStatus) {
+            // 获取内部存储的根目录
             root = Environment.getExternalStorageDirectory();
             // 当前父目录为root
             currentParent = root;
@@ -79,7 +81,7 @@ public class LocalFile_Manage extends AppCompatActivity {
             // 加载列表
             inflatelv(currentFiles);
         } else {
-            Toast.makeText(this, "SD卡没有被装载", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "内部存储没有被装载", Toast.LENGTH_SHORT).show();
         }
         // 设置列表子项监听器
         setListener();
@@ -102,9 +104,10 @@ public class LocalFile_Manage extends AppCompatActivity {
             list.add(mp);
         }
         // 创建适配器对象
-        SimpleAdapter adapter = new SimpleAdapter(this, list, R.layout.item_file, new String[] {"filename", "icon"}, new int[] {R.id.item_tv, R.id.item_icon});
+        //SimpleAdapter adapter = new SimpleAdapter(this, list, R.layout.item_file, new String[] {"filename", "icon"}, new int[] {R.id.item_tv, R.id.item_icon});
+        localAdapter = new FileManagerAdapter(this, list);
         // 列表设置适配器
-        fileLv.setAdapter(adapter);
+        fileLv.setAdapter(localAdapter);
         // 设置当前路径文本
         pathTv.setText("当前路径：" + currentParent.getAbsolutePath());
     }

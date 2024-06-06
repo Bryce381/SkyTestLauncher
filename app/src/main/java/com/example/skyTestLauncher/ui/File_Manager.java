@@ -127,6 +127,12 @@ public class File_Manager extends AppCompatActivity {
                     // 启动新的Activity
                     startActivity(intent);
                 }
+                if (position == 1){
+                    // 创建一个Intent，用于从当前Activity跳转到LocalFile_Manage类的Activity
+                    Intent intent = new Intent(SkyTestLauncherApplication.getContext(), ExternalFile_Manage.class);
+                    // 启动新的Activity
+                    startActivity(intent);
+                }
             }
         });
 
@@ -159,7 +165,6 @@ public class File_Manager extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        LogUtil.d("test1", "list0"+list.size());
         usbReceiver = new UsbBroadcastReceiver(new UsbBroadcastReceiver.UsbListener() {
             @Override
             public void onUsbStateChanged(boolean connected) {
