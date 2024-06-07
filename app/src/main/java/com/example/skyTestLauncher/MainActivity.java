@@ -17,8 +17,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.SkyTestLauncher.R;
 import com.example.skyTestLauncher.ui.File_Manager;
 import com.example.skyTestLauncher.ui.Net_Monitor;
-import com.example.skyTestLauncher.ui.NetworkMonitorService;
-import com.example.skyTestLauncher.ui.NetworkchangeReceiver;
+import com.example.skyTestLauncher.logic.NetworkMonitorService;
+import com.example.skyTestLauncher.logic.NetworkchangeReceiver;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {

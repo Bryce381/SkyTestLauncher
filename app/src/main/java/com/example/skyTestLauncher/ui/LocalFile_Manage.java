@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,11 +23,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.SkyTestLauncher.R;
+import com.example.skyTestLauncher.logic.FileManagerAdapter;
 import com.example.utils.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,12 +47,13 @@ public class LocalFile_Manage extends AppCompatActivity {
     ImageView ivSearch;  // 搜索关键词
     EditText etSearch;   // 输入内容
     FileManagerAdapter localAdapter;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_file_manage);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // 绑定控件
         pathTv = findViewById(R.id.tv_filepath);
@@ -65,6 +68,35 @@ public class LocalFile_Manage extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
             initFile();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
+                    finish();
+                } else {
+                    currentParent = currentParent.getParentFile();
+                    currentFiles = currentParent.listFiles();
+                    inflatelv(currentFiles);
+                }
+            }
+        });
+    }
+
+    //监听按键
+    @Override
+    public void onBackPressed() {
+        if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
+            finish();
+        } else {
+            currentParent = currentParent.getParentFile();
+            currentFiles = currentParent.listFiles();
+            inflatelv(currentFiles);
         }
     }
 
@@ -88,6 +120,7 @@ public class LocalFile_Manage extends AppCompatActivity {
     }
 
     private void inflatelv(File[] currentFiles) {
+        String lengthStr = null;
         // 列表对象（元素是哈希表）
         List<Map<String, Object>> list = new ArrayList<>();
         for (int i = 0; i < currentFiles.length; i++) {
@@ -100,11 +133,21 @@ public class LocalFile_Manage extends AppCompatActivity {
             } else {
                 mp.put("icon", R.drawable.ic_folder);
             }
+
+            //文件数量
+            lengthStr = ""+currentFiles[i].listFiles().length+"项";
+            mp.put("fileCount", lengthStr);
+
+            // 文件修改时间
+            long lastModifiedTime = currentFiles[i].lastModified();
+            Date date = new Date(lastModifiedTime);
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+            mp.put("fileTime",formattedDate);
+
             // 向列表中添加哈希表
             list.add(mp);
         }
-        // 创建适配器对象
-        //SimpleAdapter adapter = new SimpleAdapter(this, list, R.layout.item_file, new String[] {"filename", "icon"}, new int[] {R.id.item_tv, R.id.item_icon});
+
         localAdapter = new FileManagerAdapter(this, list);
         // 列表设置适配器
         fileLv.setAdapter(localAdapter);
@@ -211,17 +254,7 @@ public class LocalFile_Manage extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.back) {
-            /* 判断当前的目录是否为SD卡的根目录，如果是根目录退出活动；
-             * 如果不是根目录，获取当前目录的父目录和它的所有文件，重新加载列表 */
-            if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
-                finish();
-            } else {
-                currentParent = currentParent.getParentFile();
-                currentFiles = currentParent.listFiles();
-                inflatelv(currentFiles);
-            }
-        } else if (itemId == R.id.back_root) {
+            if (itemId == R.id.back_root) {
             Toast.makeText(this, "回到根目录", Toast.LENGTH_SHORT).show();
             currentParent = root;
             currentFiles = currentParent.listFiles();
@@ -304,5 +337,16 @@ public class LocalFile_Manage extends AppCompatActivity {
         currentFiles = currentParent.listFiles();
         inflatelv(currentFiles);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 清空ListView的数据源以达到清除所有Map表数据的效果
+        if (localAdapter != null) {
+            List<Map<String, Object>> emptyList = new ArrayList<>();
+            localAdapter.updateData(emptyList);
+        }
+    }
+
 
 }

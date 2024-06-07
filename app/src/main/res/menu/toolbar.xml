@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/back"
-        android:icon="@drawable/bg_back"
-        android:title="Back"
-        app:showAsAction="always" />
     <item android:id="@+id/back_root"
         android:icon="@drawable/bg_backroot"
         android:title="Root"
@@ -22,4 +18,22 @@
                 app:showAsAction="never"/>
         </menu>
     </item>
+    <item android:id="@+id/sort"
+        android:icon="@drawable/icon_sort"
+        android:title="Sort"
+        android:color="@color/white"
+        app:showAsAction="always" >
+        <menu>
+            <item android:id="@+id/sort_name"
+                android:title="按名称"
+                app:showAsAction="never"/>
+            <item android:id="@+id/sort_time"
+                android:title="按时间"
+                app:showAsAction="never"/>
+            <item android:id="@+id/sort_size"
+                android:title="按大小"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
+
 </menu>

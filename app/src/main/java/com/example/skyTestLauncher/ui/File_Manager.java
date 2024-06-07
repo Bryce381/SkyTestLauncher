@@ -1,39 +1,27 @@
 package com.example.skyTestLauncher.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.SkyTestLauncher.R;
 import com.example.skyTestLauncher.SkyTestLauncherApplication;
+import com.example.skyTestLauncher.logic.FileManagerAdapter;
+import com.example.skyTestLauncher.logic.UsbBroadcastReceiver;
 import com.example.utils.LogUtil;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +37,10 @@ public class File_Manager extends AppCompatActivity {
     List<Map<String, Object>> list;
     HashMap<String, UsbDevice> deviceList;
     FileManagerAdapter adapter;
+    Toolbar toolbar;
+    MenuItem sortMenuItem;
+    MenuItem backMenuItem;
+    MenuItem newBuildMenuItem;
 
 
     @Override
@@ -56,7 +48,7 @@ public class File_Manager extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_manager);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // 获取UsbManager服务
@@ -92,13 +84,6 @@ public class File_Manager extends AppCompatActivity {
         mp.put("filename", "内部存储空间");
         mp.put("icon", R.drawable.ic_folder);
         list.add(mp);
-
-
-//            // 存储设备已挂载，可以进行读写操作
-//            Map<String, Object> mp1 = new HashMap<>();
-//            mp1.put("filename", "外部存储空间");
-//            mp1.put("icon", R.drawable.ic_folder);
-//            list.add(mp1);
 
         // 创建适配器对象
         adapter = new FileManagerAdapter(this, list);
@@ -149,22 +134,28 @@ public class File_Manager extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
-        return true;
-    }
+        sortMenuItem = menu.findItem(R.id.sort);
+        backMenuItem = menu.findItem(R.id.back_root);
+        newBuildMenuItem = menu.findItem(R.id.newbuilt);
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.back) {
-            //当前页面退出直接finish
-            finish();
-        }
-    return true;
+        //在文件管理主页面设置toolbar中item隐藏
+        sortMenuItem.setVisible(false);
+        backMenuItem.setVisible(false);
+        newBuildMenuItem.setVisible(false);
+
+        return true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         usbReceiver = new UsbBroadcastReceiver(new UsbBroadcastReceiver.UsbListener() {
             @Override
             public void onUsbStateChanged(boolean connected) {

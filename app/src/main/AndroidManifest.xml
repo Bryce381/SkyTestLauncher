@@ -62,7 +62,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.example.skyTestLauncher.ui.UsbBroadcastReceiver"
+        <receiver android:name="com.example.skyTestLauncher.logic.UsbBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -75,7 +75,7 @@
 
 
         <service
-            android:name="com.example.skyTestLauncher.ui.NetworkMonitorService"
+            android:name="com.example.skyTestLauncher.logic.NetworkMonitorService"
             android:enabled="true"
             android:exported="false" />
     </application>

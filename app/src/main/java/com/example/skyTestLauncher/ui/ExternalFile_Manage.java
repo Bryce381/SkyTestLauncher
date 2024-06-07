@@ -1,22 +1,16 @@
 package com.example.skyTestLauncher.ui;
 
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,14 +22,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.SkyTestLauncher.R;
-import com.example.skyTestLauncher.SkyTestLauncherApplication;
+import com.example.skyTestLauncher.logic.FileManagerAdapter;
 import com.example.skyTestLauncher.model.ExternalFileModel;
 import com.example.utils.LogUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +48,7 @@ public class ExternalFile_Manage extends AppCompatActivity {
     File currentParent;  // 当前的父目录
     File[] currentFiles; // 当前文件
     File root;           // 内部存储的根目录
+    Toolbar toolbar;
 
 
     @Override
@@ -59,7 +56,7 @@ public class ExternalFile_Manage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_external_file_manage);
 
-        Toolbar toolbar = findViewById(R.id.external_toolbar);
+        toolbar = findViewById(R.id.external_toolbar);
         setSupportActionBar(toolbar);
 
         // 绑定控件
@@ -69,58 +66,118 @@ public class ExternalFile_Manage extends AppCompatActivity {
         ivSearch = findViewById(R.id.iv_search);
         etSearch = findViewById(R.id.et_search);
 
-
         initFile();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
+                    finish();
+                } else {
+                    currentParent = currentParent.getParentFile();
+                    currentFiles = currentParent.listFiles();
+                    inflatelv(currentFiles);
+                }
+            }
+        });
+    }
+
+    //监听按键
+    @Override
+    public void onBackPressed() {
+        if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
+            finish();
+        } else {
+            currentParent = currentParent.getParentFile();
+            currentFiles = currentParent.listFiles();
+            inflatelv(currentFiles);
+        }
     }
 
     private void initFile() {
         // 获取U盘的路径
         String path = ExternalFileModel.getInstance().getExternalFilePath();
-        LogUtil.d("2ExternalStorage", "path: " + path);
         root = new File(path);
-        LogUtil.d("2ExternalStorage", "Root: " + root);
         // 当前父目录为root
         currentParent = root;
-        // 获取当前目录的所有文件
-        currentFiles = currentParent.listFiles();
-        // 加载列表
-        inflatelv(currentFiles);// 设置列表子项监听器
-        setListener();
-    }
-    private static boolean isUsbDrive(StorageVolume volume) {
-        try {
-            Method getPathFile = StorageVolume.class.getMethod("getPathFile");
-            File pathFile = (File) getPathFile.invoke(volume);
-            return Environment.isExternalStorageRemovable(pathFile);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (currentParent.exists() && currentParent.isDirectory()) {
+            // 获取当前目录的所有文件
+            currentFiles = currentParent.listFiles();
+            // 加载列表
+            inflatelv(currentFiles);
+            // 设置列表子项监听器
+            setListener();
+        }else{
+            LogUtil.d("test1", "No files or directories found in " + currentParent);
         }
-        return false;
     }
 
     private void inflatelv(File[] currentFiles) {
+        String lengthStr = null;
+        String fileSize = null;
         // 列表对象（元素是哈希表）
         List<Map<String, Object>> list = new ArrayList<>();
+        LogUtil.d("test1", "currentFiles.length = " + currentFiles.length);
         for (int i = 0; i < currentFiles.length; i++) {
             // 哈希表对象（键是字符串，值是任意类型）
             Map<String, Object> mp = new HashMap<>();
             mp.put("filename", currentFiles[i].getName());
             // 给文件和文件夹类型赋予不同的icon
-            if (currentFiles[i].isDirectory()) {
+            if (currentFiles[i].isDirectory() && getFileType(currentFiles[i]) != "ts file") {
                 mp.put("icon", R.drawable.ic_folder);
-            } else{
+                //文件数量
+                lengthStr = ""+currentFiles[i].listFiles().length+"项";
+                mp.put("fileCount", lengthStr);
+
+                LogUtil.d("test1", currentFiles[i].getName() + " is a directory.");
+            }else if (currentFiles[i].isFile()) {
+                if (currentFiles[i].length() > 1024) {
+                    fileSize = "" + currentFiles[i].length() / 1024 + "KB";
+                } else if (currentFiles[i].length() > 1024 * 1024) {
+                    fileSize = "" + currentFiles[i].length() / 1024 / 1024 + "MB";
+                } else if (currentFiles[i].length() > 1024 * 1024 * 1024){
+                    fileSize = "" + currentFiles[i].length() / 1024 / 1024 / 1024 + "GB";
+                }
+                mp.put("fileCount", fileSize);
                 mp.put("icon", R.drawable.ic_file);
+                LogUtil.d("test1", currentFiles[i].getName() + " is a file.");
             }
+
+            // 文件修改时间
+            long lastModifiedTime = currentFiles[i].lastModified();
+            Date date = new Date(lastModifiedTime);
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+            LogUtil.d("test1", formattedDate);
+            mp.put("fileTime",formattedDate);
+
             // 向列表中添加哈希表
             list.add(mp);
         }
-        // 创建适配器对象
-        //SimpleAdapter adapter = new SimpleAdapter(this, list, R.layout.item_file, new String[] {"filename", "icon"}, new int[] {R.id.item_tv, R.id.item_icon});
+
         localAdapter = new FileManagerAdapter(this, list);
         // 列表设置适配器
         fileLv.setAdapter(localAdapter);
         // 设置当前路径文本
         pathTv.setText("当前路径：" + currentParent.getAbsolutePath());
+    }
+
+    private String getFileType(File file) {
+        String name = file.getName();
+        int lastIndex = name.lastIndexOf('.');
+        if (lastIndex != -1 && lastIndex < name.length() - 1) {
+            String extension = name.substring(lastIndex + 1).toLowerCase();
+            switch (extension) {
+                case "ts":
+                    return "ts file";
+                default:
+                    return "Unknown File Type";
+            }
+        }
+        return "Unknown File Type";
     }
 
     private void setListener() {
@@ -220,18 +277,8 @@ public class ExternalFile_Manage extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.back) {
-            /* 判断当前的目录是否为SD卡的根目录，如果是根目录退出活动；
-             * 如果不是根目录，获取当前目录的父目录和它的所有文件，重新加载列表 */
-            if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
-                finish();
-            } else {
-                currentParent = currentParent.getParentFile();
-                currentFiles = currentParent.listFiles();
-                inflatelv(currentFiles);
-            }
-        } else if (itemId == R.id.back_root) {
-            Toast.makeText(this, "回到根目录", Toast.LENGTH_SHORT).show();
+        //回到根目录
+        if (itemId == R.id.back_root) {
             currentParent = root;
             currentFiles = currentParent.listFiles();
             inflatelv(currentFiles);
@@ -258,7 +305,7 @@ public class ExternalFile_Manage extends AppCompatActivity {
         EditText etName = myView.findViewById(R.id.et_name);
 
         // 按下取消，销毁对话框
-        TextView tvCancel = myView.findViewById(R.id.tv_cancel);
+        Button tvCancel = myView.findViewById(R.id.tv_cancel);
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -266,7 +313,7 @@ public class ExternalFile_Manage extends AppCompatActivity {
             }
         });
         // 按下新建，创建新文件（夹）
-        TextView tvNewBuilt = myView.findViewById(R.id.tv_newbuilt);
+        Button tvNewBuilt = myView.findViewById(R.id.tv_newbuilt);
         tvNewBuilt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
