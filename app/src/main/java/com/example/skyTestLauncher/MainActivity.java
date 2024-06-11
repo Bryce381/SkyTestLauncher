@@ -15,6 +15,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.SkyTestLauncher.R;
+import com.example.skyTestLauncher.logic.UsbMountMonitorService;
 import com.example.skyTestLauncher.ui.File_Manager;
 import com.example.skyTestLauncher.ui.Net_Monitor;
 import com.example.skyTestLauncher.logic.NetworkMonitorService;
@@ -48,8 +49,12 @@ public class MainActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
+                //启动网络监听
                 Intent intent = new Intent(getApplicationContext(), NetworkMonitorService.class);
                 startService(intent);
+                //启动U盘挂载监听service
+                Intent usbMountIntent = new Intent(getApplicationContext(), UsbMountMonitorService.class);
+                startService(usbMountIntent);
             }
         });
 

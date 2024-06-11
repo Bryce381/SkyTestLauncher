@@ -20,6 +20,7 @@ import com.example.SkyTestLauncher.R;
 import com.example.skyTestLauncher.SkyTestLauncherApplication;
 import com.example.skyTestLauncher.logic.FileManagerAdapter;
 import com.example.skyTestLauncher.logic.UsbBroadcastReceiver;
+import com.example.skyTestLauncher.model.ExternalFileModel;
 import com.example.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.Map;
 public class File_Manager extends AppCompatActivity {
 
     ListView fileLv;     // 文件列表
-    private UsbBroadcastReceiver usbReceiver, usbReceiver2;
+    private UsbBroadcastReceiver usbReceiver;
     IntentFilter filter;
 
     List<Map<String, Object>> list;
@@ -67,7 +68,22 @@ public class File_Manager extends AppCompatActivity {
         // 绑定控件
         fileLv = findViewById(R.id.lv_file_manager);
         initFile();
+        LogUtil.d("test1", "list11" + list.size());
 
+        if("mounted" == ExternalFileModel.getInstance().getUsbMountStatus()) {
+            // 处理U盘挂载的逻辑
+            Map<String, Object> mp1 = new HashMap<>();
+            mp1.put("filename", "外部存储空间");
+            mp1.put("icon", R.drawable.ic_folder);
+            list.add(mp1);
+            LogUtil.d("test1", "list11" + list.size());
+        }else if("unmounted" == ExternalFileModel.getInstance().getUsbMountStatus()){
+            // 处理U盘卸载的逻辑
+            if(2 == list.size()) {
+                list.remove(list.size()-1);
+            }
+            LogUtil.d("test1", "list22"+list.size());
+        }
 
     }
 
