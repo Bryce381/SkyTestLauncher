@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -23,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.SkyTestLauncher.R;
+import com.example.skyTestLauncher.logic.FileManageHelps;
 import com.example.skyTestLauncher.logic.FileManagerAdapter;
 import com.example.utils.LogUtil;
 
@@ -48,6 +50,7 @@ public class LocalFile_Manage extends AppCompatActivity {
     EditText etSearch;   // 输入内容
     FileManagerAdapter localAdapter;
     Toolbar toolbar;
+    FileManageHelps fileManageHelps = new FileManageHelps();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,38 +124,60 @@ public class LocalFile_Manage extends AppCompatActivity {
 
     private void inflatelv(File[] currentFiles) {
         String lengthStr = null;
+        String fileSize = null;
+        String formattedDate = null;
         // 列表对象（元素是哈希表）
         List<Map<String, Object>> list = new ArrayList<>();
+        LogUtil.d("test1","currentFiles.length = "+currentFiles.length);
         for (int i = 0; i < currentFiles.length; i++) {
             // 哈希表对象（键是字符串，值是任意类型）
             Map<String, Object> mp = new HashMap<>();
             mp.put("filename", currentFiles[i].getName());
             // 给文件和文件夹类型赋予不同的icon
-            if (currentFiles[i].isFile()) {
-                mp.put("icon", R.drawable.ic_file);
-            } else {
+            if (currentFiles[i].isDirectory() && getFileType(currentFiles[i]) != "ts file") {
                 mp.put("icon", R.drawable.ic_folder);
+                //文件数量
+                lengthStr = fileManageHelps.getFolderSubItems(currentFiles[i]);
+                mp.put("fileCount", lengthStr);
+
+                LogUtil.d("test1", currentFiles[i].getName() + " is a directory.");
+            }else if (currentFiles[i].isFile()) {
+                fileSize = fileManageHelps.getFileCount(currentFiles[i]);
+                mp.put("fileCount", fileSize);
+                mp.put("icon", R.drawable.ic_file);
+                LogUtil.d("test1", currentFiles[i].getName() + " is a file.");
             }
 
-            //文件数量
-            lengthStr = ""+currentFiles[i].listFiles().length+"项";
-            mp.put("fileCount", lengthStr);
-
             // 文件修改时间
-            long lastModifiedTime = currentFiles[i].lastModified();
-            Date date = new Date(lastModifiedTime);
-            String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+            formattedDate = fileManageHelps.getFileTime(currentFiles[i]);
             mp.put("fileTime",formattedDate);
 
             // 向列表中添加哈希表
             list.add(mp);
         }
 
+
+
         localAdapter = new FileManagerAdapter(this, list);
         // 列表设置适配器
         fileLv.setAdapter(localAdapter);
         // 设置当前路径文本
         pathTv.setText("当前路径：" + currentParent.getAbsolutePath());
+    }
+
+    private String getFileType(File file) {
+        String name = file.getName();
+        int lastIndex = name.lastIndexOf('.');
+        if (lastIndex != -1 && lastIndex < name.length() - 1) {
+            String extension = name.substring(lastIndex + 1).toLowerCase();
+            switch (extension) {
+                case "ts":
+                    return "ts file";
+                default:
+                    return "Unknown File Type";
+            }
+        }
+        return "Unknown File Type";
     }
 
 
@@ -167,16 +192,16 @@ public class LocalFile_Manage extends AppCompatActivity {
                     return;
                 }
                 File[] temp = currentFiles[i].listFiles();
-                if (temp == null || temp.length == 0) {
-                    Toast.makeText(LocalFile_Manage.this, "当前文件夹为空", Toast.LENGTH_SHORT).show();
-                } else {
+//                if (temp == null || temp.length == 0) {
+//                    Toast.makeText(LocalFile_Manage.this, "当前文件夹为空", Toast.LENGTH_SHORT).show();
+//                } else {
                     // 当前目录作为父目录
                     currentParent = currentFiles[i];
                     // 当前文件更新为父目录下的文件
                     currentFiles = temp;
                     // 数据源发生改变，重新设置适配器内容
                     inflatelv(currentFiles);
-                }
+//                }
             }
         });
         // 列表的子项的长按点击事件
@@ -223,10 +248,12 @@ public class LocalFile_Manage extends AppCompatActivity {
             public void onClick(View view) {
                 String searchName = etSearch.getText().toString().trim();
                 List<File> tempFiles = new ArrayList<>();
+                LogUtil.d("test2","111currentFiles.length"+currentFiles.length);
                 for (int i = 0; i < currentFiles.length; i++) {
                     if (currentFiles[i].getName().contains(searchName))
                         tempFiles.add(currentFiles[i]);
                 }
+                LogUtil.d("test2","222tempFiles.size()"+tempFiles.size());
                 File[] files = new File[tempFiles.size()];
                 for (int i = 0; i < tempFiles.size(); i++) {
                     files[i] = tempFiles.get(i);
@@ -242,6 +269,25 @@ public class LocalFile_Manage extends AppCompatActivity {
                 inflatelv(currentFiles);
             }
         });
+    }
+    private void searchFile(File directory, String targetFileName) {
+        if (directory.exists() && directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            List<File> tempFiles = new ArrayList<>();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        searchFile(file, targetFileName);  // 递归搜索子目录
+                    } else if (file.isFile() && file.getName().equals(targetFileName)) {
+                        tempFiles.add(file);
+
+                    }
+                }
+                LogUtil.d("test2","222tempFiles.size()"+tempFiles.size());
+            }
+        } else {
+            LogUtil.d("FileSearch", "Directory does not exist or is not a directory: " + directory.getAbsolutePath());
+        }
     }
 
 
@@ -282,7 +328,7 @@ public class LocalFile_Manage extends AppCompatActivity {
         EditText etName = myView.findViewById(R.id.et_name);
 
         // 按下取消，销毁对话框
-        TextView tvCancel = myView.findViewById(R.id.tv_cancel);
+        Button tvCancel = myView.findViewById(R.id.tv_cancel);
         tvCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -290,7 +336,7 @@ public class LocalFile_Manage extends AppCompatActivity {
             }
         });
         // 按下新建，创建新文件（夹）
-        TextView tvNewBuilt = myView.findViewById(R.id.tv_newbuilt);
+        Button tvNewBuilt = myView.findViewById(R.id.tv_newbuilt);
         tvNewBuilt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

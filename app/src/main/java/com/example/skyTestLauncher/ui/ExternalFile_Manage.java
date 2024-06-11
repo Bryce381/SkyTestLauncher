@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.SkyTestLauncher.R;
+import com.example.skyTestLauncher.logic.FileManageHelps;
 import com.example.skyTestLauncher.logic.FileManagerAdapter;
 import com.example.skyTestLauncher.model.ExternalFileModel;
 import com.example.utils.LogUtil;
@@ -49,6 +50,8 @@ public class ExternalFile_Manage extends AppCompatActivity {
     File[] currentFiles; // 当前文件
     File root;           // 内部存储的根目录
     Toolbar toolbar;
+    FileManageHelps fileManageHelps = new FileManageHelps();
+
 
 
     @Override
@@ -119,6 +122,7 @@ public class ExternalFile_Manage extends AppCompatActivity {
     private void inflatelv(File[] currentFiles) {
         String lengthStr = null;
         String fileSize = null;
+        String formattedDate = null;
         // 列表对象（元素是哈希表）
         List<Map<String, Object>> list = new ArrayList<>();
         LogUtil.d("test1", "currentFiles.length = " + currentFiles.length);
@@ -127,31 +131,22 @@ public class ExternalFile_Manage extends AppCompatActivity {
             Map<String, Object> mp = new HashMap<>();
             mp.put("filename", currentFiles[i].getName());
             // 给文件和文件夹类型赋予不同的icon
-            if (currentFiles[i].isDirectory() && getFileType(currentFiles[i]) != "ts file") {
+            if (currentFiles[i].isDirectory()) {
                 mp.put("icon", R.drawable.ic_folder);
                 //文件数量
-                lengthStr = ""+currentFiles[i].listFiles().length+"项";
+                lengthStr = fileManageHelps.getFolderSubItems(currentFiles[i]);
                 mp.put("fileCount", lengthStr);
 
                 LogUtil.d("test1", currentFiles[i].getName() + " is a directory.");
             }else if (currentFiles[i].isFile()) {
-                if (currentFiles[i].length() > 1024) {
-                    fileSize = "" + currentFiles[i].length() / 1024 + "KB";
-                } else if (currentFiles[i].length() > 1024 * 1024) {
-                    fileSize = "" + currentFiles[i].length() / 1024 / 1024 + "MB";
-                } else if (currentFiles[i].length() > 1024 * 1024 * 1024){
-                    fileSize = "" + currentFiles[i].length() / 1024 / 1024 / 1024 + "GB";
-                }
+                fileSize = fileManageHelps.getFileCount(currentFiles[i]);
                 mp.put("fileCount", fileSize);
                 mp.put("icon", R.drawable.ic_file);
-                LogUtil.d("test1", currentFiles[i].getName() + " is a file.");
+
             }
 
             // 文件修改时间
-            long lastModifiedTime = currentFiles[i].lastModified();
-            Date date = new Date(lastModifiedTime);
-            String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
-            LogUtil.d("test1", formattedDate);
+            formattedDate = fileManageHelps.getFileTime(currentFiles[i]);
             mp.put("fileTime",formattedDate);
 
             // 向列表中添加哈希表
