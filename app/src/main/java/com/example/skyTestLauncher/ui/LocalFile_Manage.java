@@ -134,7 +134,7 @@ public class LocalFile_Manage extends AppCompatActivity {
             Map<String, Object> mp = new HashMap<>();
             mp.put("filename", currentFiles[i].getName());
             // 给文件和文件夹类型赋予不同的icon
-            if (currentFiles[i].isDirectory() && getFileType(currentFiles[i]) != "ts file") {
+            if (currentFiles[i].isDirectory()) {
                 mp.put("icon", R.drawable.ic_folder);
                 //文件数量
                 lengthStr = fileManageHelps.getFolderSubItems(currentFiles[i]);

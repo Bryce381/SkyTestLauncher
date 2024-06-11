@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,8 @@ public class ExternalFile_Manage extends AppCompatActivity {
     File root;           // 内部存储的根目录
     Toolbar toolbar;
     FileManageHelps fileManageHelps = new FileManageHelps();
+    File[] sortedFiles;
+    int temp = 0;
 
 
 
@@ -95,9 +100,18 @@ public class ExternalFile_Manage extends AppCompatActivity {
         if (currentParent.getAbsolutePath().equals(root.getAbsolutePath())) {
             finish();
         } else {
-            currentParent = currentParent.getParentFile();
-            currentFiles = currentParent.listFiles();
+//            if(0 == temp){
+                currentParent = currentParent.getParentFile();
+                currentFiles = currentParent.listFiles();
+//            }else if(1 == temp){
+//                currentFiles = sortedFiles;
+//            }else if(2 == temp){
+//                currentFiles = sortedFiles;
+//            }else if(3 == temp){
+//                currentFiles = sortedFiles;
+//            }
             inflatelv(currentFiles);
+
         }
     }
 
@@ -160,20 +174,6 @@ public class ExternalFile_Manage extends AppCompatActivity {
         pathTv.setText("当前路径：" + currentParent.getAbsolutePath());
     }
 
-    private String getFileType(File file) {
-        String name = file.getName();
-        int lastIndex = name.lastIndexOf('.');
-        if (lastIndex != -1 && lastIndex < name.length() - 1) {
-            String extension = name.substring(lastIndex + 1).toLowerCase();
-            switch (extension) {
-                case "ts":
-                    return "ts file";
-                default:
-                    return "Unknown File Type";
-            }
-        }
-        return "Unknown File Type";
-    }
 
     private void setListener() {
         // 列表的子项短按点击事件
@@ -186,16 +186,12 @@ public class ExternalFile_Manage extends AppCompatActivity {
                     return;
                 }
                 File[] temp = currentFiles[i].listFiles();
-                if (temp == null || temp.length == 0) {
-                    Toast.makeText(ExternalFile_Manage.this, "当前文件夹为空", Toast.LENGTH_SHORT).show();
-                } else {
                     // 当前目录作为父目录
                     currentParent = currentFiles[i];
                     // 当前文件更新为父目录下的文件
                     currentFiles = temp;
                     // 数据源发生改变，重新设置适配器内容
                     inflatelv(currentFiles);
-                }
             }
         });
         // 列表的子项的长按点击事件
@@ -283,8 +279,30 @@ public class ExternalFile_Manage extends AppCompatActivity {
         } else if (itemId == R.id.newfolder) {
             // 新建文件夹
             createFile("新建文件夹");
-        } else {
-            // 其他情况
+        } else if (itemId == R.id.sort_name){
+            // 按名称排序
+            sortedFiles = FileManageHelps.orderByName(currentParent.getAbsolutePath());
+            inflatelv(sortedFiles);
+            currentFiles = sortedFiles;
+            //temp = 1;
+            // 设置列表子项监听器
+            setListener();
+        } else if (itemId == R.id.sort_time){
+            // 按时间排序
+            sortedFiles = FileManageHelps.orderByDate(currentParent.getAbsolutePath());
+            inflatelv(sortedFiles);
+            currentFiles = sortedFiles;
+            //temp = 2;
+            // 设置列表子项监听器
+            setListener();
+        } else if (itemId == R.id.sort_size){
+            // 按大小排序
+            sortedFiles = FileManageHelps.orderByLength(currentParent.getAbsolutePath());
+            inflatelv(sortedFiles);
+            currentFiles = sortedFiles;
+            //temp = 3;
+            // 设置列表子项监听器
+            setListener();
         }
         return true;
     }
