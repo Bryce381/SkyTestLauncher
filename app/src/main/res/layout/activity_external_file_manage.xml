@@ -32,27 +32,31 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:background="@color/teal_200"
-        android:padding="5dp">
+        android:padding="5dp"
+        android:visibility="gone">
         <ImageView
             android:id="@+id/iv_clean"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/bg_clean"
-            android:alpha="0.88"/>
+            android:alpha="0.88"
+            android:visibility="gone"/>
         <EditText
             android:id="@+id/et_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="请输入文件名称"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:visibility="gone"/>
         <ImageView
             android:id="@+id/iv_search"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/bg_search"
             android:layout_marginLeft="-40dp"
-            android:alpha="0.88"/>
+            android:alpha="0.88"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </RelativeLayout>
