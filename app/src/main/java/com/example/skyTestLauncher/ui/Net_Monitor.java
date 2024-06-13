@@ -13,6 +13,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.SkyTestLauncher.R;
+import com.example.skyTestLauncher.SkyTestLauncherApplication;
+import com.example.skyTestLauncher.logic.NetMonitorHelpers;
 import com.example.skyTestLauncher.model.DataViewModel;
 import com.example.skyTestLauncher.views.LineChartView;
 import com.example.skyTestLauncher.views.NetUsageView;
@@ -26,18 +28,14 @@ public class Net_Monitor extends AppCompatActivity {
     private ImageButton imageButton;
     private Button button;
     private Intent intent;
-    private TextView download_speed, upload_speed;
-
+    private TextView download_speed, upload_speed, ip_address;
     private LineChartView lineChartView1,lineChartView2;
 
     private DataViewModel dataViewModel;
+    private NetMonitorHelpers netMonitorHelpers;
 
     private static MutableLiveData<String> liveDataUp = new MutableLiveData<>();
     private static MutableLiveData<String> liveDataDown = new MutableLiveData<>();
-
-
-
-
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -70,12 +68,15 @@ public class Net_Monitor extends AppCompatActivity {
         lineChartView2 = (LineChartView) findViewById(R.id.WaveView2);
 
 
-
-
-
-
         netUsageView = (NetUsageView) findViewById(R.id.netUsage);
         netUsageView.setCurrentNumAnim(500);
+
+        netMonitorHelpers = new NetMonitorHelpers();
+        ip_address = (TextView) findViewById(R.id.ip_address);
+        String ip = netMonitorHelpers.getIPAddress(SkyTestLauncherApplication.getContext());
+        ip_address.setText(ip);
+        LogUtil.d("test1", ip);
+
 
         //监听点击imageButton事件
         imageButton = (ImageButton) findViewById(R.id.imageButton_enter);

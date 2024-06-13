@@ -259,7 +259,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/white"/>
             <TextView
-                android:id="@+id/ip_text2"
+                android:id="@+id/ip_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ip_text"
