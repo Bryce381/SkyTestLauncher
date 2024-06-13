@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.example.SkyTestLauncher.R;
+import com.example.utils.LogUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -29,11 +30,16 @@ public class BarChartView extends View {
     private Paint mPaintText;
     //柱状条对应的颜色数组
     private int colors;
-    private int keduTextSpace = 80;//刻度与文字之间的间距
-    private int keduWidth = 40; //坐标轴上横向标识线宽度
-    private int keduSpace = 500; //每个刻度之间的间距 px
-    private int itemSpace = 200;//柱状条之间的间距
-    private int itemWidth = 200;//柱状条的宽度
+//    private int keduTextSpace = 80;//刻度与文字之间的间距
+//    private int keduWidth = 40; //坐标轴上横向标识线宽度
+//    private int keduSpace = 500; //每个刻度之间的间距 px
+//    private int itemSpace = 200;//柱状条之间的间距
+//    private int itemWidth = 200;//柱状条的宽度
+private int keduTextSpace = 20;//刻度与文字之间的间距
+    private int keduWidth = 10; //坐标轴上横向标识线宽度
+    private int keduSpace = 125; //每个刻度之间的间距 px
+    private int itemSpace = 50;//柱状条之间的间距
+    private int itemWidth = 50;//柱状条的宽度
     //刻度递增的值
     private int valueSpace = 4;
     //绘制柱形图的坐标起点
@@ -75,7 +81,25 @@ public class BarChartView extends View {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         colors = ContextCompat.getColor(context, R.color.light_blue_700);
+        // 初始化固定坐标轴配置
+        initYAxis(); // 新增方法用于初始化y轴数据
+        initXAxis(); // 新增方法用于初始化x轴数据
         init(context, false);
+    }
+
+    private void initYAxis() {
+        // 假设y轴的刻度是固定的，这里仅作示例
+        for (int i = 0; i <= 5; i++) {
+            yAxisList.add(i * valueSpace);
+        }
+    }
+
+    private void initXAxis() {
+        // 假设x轴标签是固定的，这里仅作示例
+        String[] xAxis = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"};
+        for (String label : xAxis) {
+            xAxisList.add(label);
+        }
     }
 
     private void init(Context context, boolean isUpdate) {
@@ -83,11 +107,12 @@ public class BarChartView extends View {
             initData();
         }
 
-        keduTextSpace = (int) pxToDp(keduTextSpace);
-        keduWidth = (int) pxToDp(keduWidth);
-        keduSpace = (int) pxToDp(keduSpace);
-        itemSpace = (int) pxToDp(itemSpace);
-        itemWidth = (int) pxToDp(itemWidth);
+//        keduTextSpace = (int) pxToDp(keduTextSpace);
+//        keduWidth = (int) pxToDp(keduWidth);
+//        keduSpace = (int) pxToDp(keduSpace);
+//        itemSpace = (int) pxToDp(itemSpace);
+//        itemWidth = (int) pxToDp(itemWidth);
+//        LogUtil.d("test1", "keduTextSpace = "+keduTextSpace+"keduWidth = "+keduWidth+"keduSpace = "+keduSpace+"itemSpace = "+itemSpace+"itemWidth = "+itemWidth);
 
         //设置边缘特殊效果
         BlurMaskFilter PaintBGBlur = new BlurMaskFilter(
@@ -106,7 +131,7 @@ public class BarChartView extends View {
         //绘制文字的画笔
         mPaintText = new Paint();
         mPaintText.setTextSize(mTextSize);
-        mPaintText.setColor(ContextCompat.getColor(context, R.color.black));
+        mPaintText.setColor(ContextCompat.getColor(context, R.color.white));
         mPaintText.setAntiAlias(true);
         mPaintText.setStrokeWidth(1);
 

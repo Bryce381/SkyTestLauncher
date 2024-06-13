@@ -51,6 +51,7 @@ public class LocalFile_Manage extends AppCompatActivity {
     FileManagerAdapter localAdapter;
     Toolbar toolbar;
     FileManageHelps fileManageHelps = new FileManageHelps();
+    File[] sortedFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,9 +312,31 @@ public class LocalFile_Manage extends AppCompatActivity {
         } else if (itemId == R.id.newfolder) {
             // 新建文件夹
             createFile("新建文件夹");
-        } else {
-            // 其他情况
-        }
+        } else if (itemId == R.id.sort_name){
+            // 按名称排序
+            sortedFiles = FileManageHelps.orderByName(currentParent.getAbsolutePath());
+            inflatelv(sortedFiles);
+            currentFiles = sortedFiles;
+            //temp = 1;
+            // 设置列表子项监听器
+            setListener();
+        } else if (itemId == R.id.sort_time){
+            // 按时间排序
+                sortedFiles = FileManageHelps.orderByDate(currentParent.getAbsolutePath());
+                inflatelv(sortedFiles);
+                currentFiles = sortedFiles;
+                //temp = 2;
+                // 设置列表子项监听器
+                setListener();
+            } else if (itemId == R.id.sort_size){
+                // 按大小排序
+                sortedFiles = FileManageHelps.orderByLength(currentParent.getAbsolutePath());
+                inflatelv(sortedFiles);
+                currentFiles = sortedFiles;
+                //temp = 3;
+                // 设置列表子项监听器
+                setListener();
+            }
         return true;
     }
 
